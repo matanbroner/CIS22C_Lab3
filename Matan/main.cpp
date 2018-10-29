@@ -69,7 +69,7 @@ int main(int argc, const char * argv[])
         {
             cout << "Press ENTER to continue...";
             cin.get();
-            system("clear");
+            system("cls");
         }
     }
      cout << "... system exiting, goodbye!" << endl;

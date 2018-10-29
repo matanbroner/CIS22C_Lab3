@@ -178,7 +178,7 @@ std::string reverse(std::string s)
             std::string num;
             num += s[i];
             tempLength++;
-            while (isOperand(s[i-1]))
+            while (i != 0 && isOperand(s[i-1]))
             {
                 i--;
                 num = s[i] + num;

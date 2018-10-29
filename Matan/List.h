@@ -7,7 +7,7 @@ template<typename T>
 class List
 {
 private:
-    int count; // amount of nodes in the list
+    int count = 0; // amount of nodes in the list
     Node<T>* head; // pointer to the first node in the list
     Node<T>* tail; // not used in the Linked List, but can be used in potential queue inheritance structures
     

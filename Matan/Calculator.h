@@ -128,7 +128,9 @@ void Calculator::convert_POSTFIX()
         }
     }
     while(!this->operators.isEmpty())
+    {
         operateAndPushResult();
+    }
     
     this->postfixResult = this->numbers.pop();
 }
@@ -162,14 +164,9 @@ void Calculator::convert_PREFIX()
 
 void Calculator::operatorPush(char op)
 {
-    if (this->operators.getStackCount() == 0)
-    {
-        this->operators.push(op);
-        return;
-    }
-    else
-    {
-        if (Operator::getPriority(this->operators.rear()) < Operator::getPriority(op))
+        if (this->operators.getStackCount() == 0 )
+            this->operators.push(op);
+        else if (Operator::getPriority(this->operators.rear()) < Operator::getPriority(op))
             this->operators.push(op);
         else
         {
@@ -177,7 +174,7 @@ void Calculator::operatorPush(char op)
                 this->operateAndPushResult();
             this->operators.push(op);
         }
-    }
+    
 }
 
 void Calculator::operateAndPushResult(int mode)
@@ -187,18 +184,23 @@ void Calculator::operateAndPushResult(int mode)
     {
         op2 = this->numbers.pop();
         op1 = this->numbers.pop();
+        
+        char operate = this->operators.pop();
+        int resultOfOp = Operator::operation(op1, op2, operate);
+        this->numbers.push(resultOfOp);
+        this->postfixExpression += operate;
     }
     else if (mode == 2)
     {
         op1 = this->numbers.pop();
         op2 = this->numbers.pop();
+        
+        char operate = this->operators.pop();
+        int resultOfOp = Operator::operation(op1, op2, operate);
+        this->numbers.push(resultOfOp);
     }
     else
         throw "MODE VALUE INVALID FOR OPERATION";
-    char operate = this->operators.pop();
-    int resultOfOp = Operator::operation(op1, op2, operate);
-    this->numbers.push(resultOfOp);
-    this->postfixExpression += operate;
 }
 
 std::string Calculator::getPostfixExpression()
@@ -278,6 +280,9 @@ std::string Calculator::toPostfixNoEval(std::string eq)
         }
     }
     while(!this->operators.isEmpty())
+    {
         post += this->operators.pop();
+    }
+
     return post;
 }
