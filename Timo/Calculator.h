@@ -18,12 +18,13 @@ private:
 	int opWeight(char c);
 	bool isOperator(char c);
 	bool isOperand(char c);
-	bool isValidExpression(std::string infix);
 	bool isOpeningParenthesis(char c);
 	bool isClosingParenthesis(char c);
 
 	// return true if a <= b
 	bool hasSameOrHigherPrecedence(char a, char b);
+
+	bool isValidExpression(std::string infix);
 
 public:
 	Calculator();

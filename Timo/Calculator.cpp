@@ -7,7 +7,6 @@ Calculator::Calculator()
 	infix = promptInfix();
 }
 
-
 Calculator::~Calculator()
 {
 }
@@ -48,10 +47,7 @@ std::string Calculator::infixToPostfix(std::string infix)
 	ops.push('(');
 
 	for (int i = 0; i < n; i++) {
-		if (infix[i] >= '0' && infix[i] <= '9') {
-			//postfix += infix[i];
-			//postfix += " ";
-
+		if (isOperand(infix[i])) {
 			int counter = 0;
 			bool isInt = true;
 			// loop while isInt to grab mutli-digit numbers
@@ -74,10 +70,10 @@ std::string Calculator::infixToPostfix(std::string infix)
 				}
 				ops.push(infix[i]);
 			}
-			if (infix[i] == '(')
+			if (isOpeningParenthesis(infix[i]))
 				ops.push(infix[i]);
 
-			if (infix[i] == ')') {
+			if (isClosingParenthesis(infix[i])) {
 				while (!ops.isEmpty() && ops.top() != '(') {
 					postfix += ops.pop();
 					postfix += " ";
@@ -89,7 +85,7 @@ std::string Calculator::infixToPostfix(std::string infix)
 
 	}
 	while (!ops.isEmpty()) {
-		if (ops.top() == '(') {
+		if (isOpeningParenthesis(ops.top())) {
 			ops.pop();
 		}
 		else {
@@ -123,8 +119,8 @@ std::string Calculator::infixToPrefix(std::string infix)
 
 	// flip parenthesis
 	for (unsigned int i = 0; i < infix.size(); i++) {
-		if (infix[i] == '(') infix[i] = ')';
-		else if (infix[i] == ')') infix[i] = '(';
+		if (isOpeningParenthesis(infix[i])) infix[i] = ')';
+		else if (isClosingParenthesis(infix[i])) infix[i] = '(';
 	}
 		
 	std::string prefix = infixToPostfix(infix);
@@ -193,8 +189,7 @@ int Calculator::evaluatePostfix(std::string postfix)
 				stack.push(a%b);
 				break;
 			}
-		}
-		else {  // is ' ' so we remove this whitespace
+		} else {  // is ' ' so we remove this whitespace
 			queue.dequeue();
 		}
 		count++;
@@ -300,6 +295,32 @@ bool Calculator::isOperand(char c)
 	return false;
 }
 
+bool Calculator::isOpeningParenthesis(char c)
+{
+	if (c == '(')
+		return true;
+	return false;
+}
+
+bool Calculator::isClosingParenthesis(char c)
+{
+	if (c == ')')
+		return true;
+	return false;
+}
+
+bool Calculator::hasSameOrHigherPrecedence(char a, char b)
+{
+	int one = opWeight(a);
+	int two = opWeight(b);
+
+	if (one == two)
+		return true;
+	if (one < two)
+		return true;
+	return false;
+}
+
 bool Calculator::isValidExpression(std::string infix)
 {
 	// check (), disallow sequential operators, disallow decimals, disallow alpha
@@ -326,7 +347,7 @@ bool Calculator::isValidExpression(std::string infix)
 			return false;
 		}
 	}
-	
+
 	while (!queue.queueEmpty()) {
 		if (isOperand(queue.front())) {
 			while (!queue.queueEmpty() && isOperand(queue.front())) {
@@ -336,18 +357,21 @@ bool Calculator::isValidExpression(std::string infix)
 				operands++;  // if operands < 2 by the end of the loop: invalid
 				integer == "";  // clear integer for next operand
 			}
-		} else if (!queue.queueEmpty()) {  // when not operand, expect operator
+		}
+		else if (!queue.queueEmpty()) {  // when not operand, expect operator
 			if (queue.front() == '(' || queue.front() == ')') {
 				stack.push(queue.dequeue());  // save parenthesis to check validity after
-			} else if (isOperator(queue.front())) {
+			}
+			else if (isOperator(queue.front())) {
 				queue.dequeue();  // is operator, but not parenthesis, so remove
 
-				// check if next is operator (disallow sequential operators)
+								  // check if next is operator (disallow sequential operators)
 				if (!queue.queueEmpty() && isOperator(queue.front())) {
 					throw std::string("Expression cannot contain two sequential operators.");
 					return false;
 				}
-			} else {
+			}
+			else {
 				// if queue.front() is not an operand or an operator: invalid
 				throw std::string("Expression contains invalid characters.");
 				return false;
@@ -367,9 +391,10 @@ bool Calculator::isValidExpression(std::string infix)
 	int close = 0;
 
 	while (!stack.isEmpty()) {
-		if (stack.pop() == ')') {
+		if (isClosingParenthesis(stack.pop())) {
 			close++;
-		} else {
+		}
+		else {
 			if (close == 0) {  // if we have a ( but there is no ) to match: invalid
 				throw std::string("Expression contains invalid parenthesis.");
 				return false;
@@ -384,30 +409,4 @@ bool Calculator::isValidExpression(std::string infix)
 	}
 
 	return true;
-}
-
-bool Calculator::isOpeningParenthesis(char c)
-{
-	if (c == '(')
-		return true;
-	return false;
-}
-
-bool Calculator::isClosingParenthesis(char c)
-{
-	if (c == ')')
-		return true;
-	return false;
-}
-
-bool Calculator::hasSameOrHigherPrecedence(char a, char b)
-{
-	int one = opWeight(a);
-	int two = opWeight(b);
-
-	if (one == two)
-		return true;
-	if (one < two)
-		return true;
-	return false;
 }
