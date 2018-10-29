@@ -62,7 +62,7 @@ int Operator::operation(int num1, int num2, char op)
             return num1 / num2;
             else throw ("DIVIDE BY ZERO ERROR");
         }
-        catch (char* errorStatement)
+        catch (char const* errorStatement)
         {
             std::cout << errorStatement << std::endl;
             std::exit(0);
@@ -75,7 +75,7 @@ int Operator::operation(int num1, int num2, char op)
                 return num1 % num2;
             else throw ("DIVIDE BY ZERO ERROR");
         }
-            catch (char* errorStatement)
+            catch (char const* errorStatement)
         {
             std::cout << errorStatement << std::endl;
             std::exit(0);
